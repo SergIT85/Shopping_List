@@ -1,5 +1,7 @@
 package ru.androideducation.shopping_list.domain
 
+import androidx.lifecycle.LiveData
+
 interface ShopListRepository {
 
     fun addShopItem(shopItem: ShopItem)
@@ -10,6 +12,8 @@ interface ShopListRepository {
 
     fun getShopItemById(shopItemId: Int): ShopItem
 
-    fun getShopList(): List<ShopItem>
+    fun getShopList(): LiveData<List<ShopItem>>
+
+    fun updateShopListLD()
 
 }
