@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/material_margin_small"
+    android:layout_marginTop="@dimen/material_margin_super_small"
+    android:layout_marginEnd="@dimen/material_margin_small"
+    android:layout_marginBottom="@dimen/material_margin_super_small"
+    app:cardCornerRadius="@dimen/material_margin_super_small"
+    app:cardElevation="@dimen/material_margin_super_small"
+    app:cardUseCompatPadding="true">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/purple_200"
+        android:orientation="horizontal"
+        android:padding="@dimen/material_margin_normal">
+
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="@dimen/material_margin_small"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/good"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/count"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
