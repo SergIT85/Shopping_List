@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.androideducation.shopping_list.R
 import ru.androideducation.shopping_list.domain.ShopItem
@@ -14,11 +15,17 @@ import ru.androideducation.shopping_list.domain.ShopItem
 
 class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>() {
 
+    var onShopItemLingClickListener: ((ShopItem) -> Unit )? = null
+    var onShopItemClickListener: ((ShopItem) -> Unit)? = null
+
     var count = 0
     var shopList = listOf<ShopItem>()
         set(value) {
+            val callback = ShopListDiffCallback(shopList, value)
+            val diffCallback = DiffUtil.calculateDiff(callback)
+            diffCallback.dispatchUpdatesTo(this)
             field = value
-            notifyDataSetChanged()
+
         }
 
     class ShopItemViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
@@ -51,9 +58,17 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
 
     override fun onBindViewHolder(holder: ShopItemViewHolder, position: Int) {
         val shopItem = shopList[position]
-        holder.view.setOnLongClickListener {
-            true
+        with(holder.view) {
+            setOnLongClickListener {
+                onShopItemLingClickListener?.invoke(shopItem)
+                true
+            }
+            setOnClickListener {
+                onShopItemClickListener?.invoke(shopItem)
+            }
+
         }
+
         if (shopItem.enadled) {
             holder.tvName.text = shopItem.name
             holder.tvCount.text = shopItem.count.toString()
@@ -87,6 +102,6 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
     companion object {
         const val ENADLED = 1
         const val DISABLED = 0
-        const val MAX_VIEW_SIZE = 14
+        const val MAX_VIEW_SIZE = 18
     }
 }
