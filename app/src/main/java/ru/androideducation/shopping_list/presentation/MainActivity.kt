@@ -1,20 +1,15 @@
 package ru.androideducation.shopping_list.presentation
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.widget.LinearLayout
-import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.androideducation.shopping_list.R
-import ru.androideducation.shopping_list.domain.ShopItem
-import kotlin.math.log
 
 class MainActivity : AppCompatActivity() {
-
 
     private lateinit var viewModel: MainViewModel
     private lateinit var shopListadapter: ShopListAdapter
@@ -27,6 +22,11 @@ class MainActivity : AppCompatActivity() {
         setAdapter()
         viewModel.shopList.observe(this) {
             shopListadapter.submitList(it)
+        }
+        val buttonAddShopItem = findViewById<FloatingActionButton>(R.id.bottom_add_shop_item)
+        buttonAddShopItem.setOnClickListener {
+            val intent = ShopItemActivity.addShopItem(this)
+            startActivity(intent)
         }
     }
 
@@ -81,12 +81,15 @@ class MainActivity : AppCompatActivity() {
     private fun setClickListener() {
         shopListadapter.onShopItemClickListener = {
             Log.d("onShopItemClickListener", "shopItem: $it")
+            val intent = ShopItemActivity.editShopItem(this, it.id)
+            startActivity(intent)
         }
     }
 
     private fun setLongClickListener() {
         shopListadapter.onShopItemLingClickListener = {
             viewModel.changeShopItem(it)
+
         }
     }
 }
