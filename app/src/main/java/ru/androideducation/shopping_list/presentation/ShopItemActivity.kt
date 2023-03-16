@@ -8,6 +8,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -17,16 +18,8 @@ import ru.androideducation.shopping_list.domain.ShopItem
 import ru.androideducation.shopping_list.presentation.itemfragment.FragmentShopItem
 import java.lang.RuntimeException
 
-class ShopItemActivity : AppCompatActivity() {
+class ShopItemActivity : AppCompatActivity(), FragmentShopItem.OnEditingFinishedListener {
 
-    //    private lateinit var viewModel: ShopItemViewModel
-//
-//    private lateinit var tilName: TextInputLayout
-//    private lateinit var titCount: TextInputLayout
-//    private lateinit var elName: EditText
-//    private lateinit var etCount: EditText
-//    private lateinit var saveButton: Button
-//
     private var screenMod = UNKNOWN_MOD
     private var shopItemId = ShopItem.UNDEFINED_ID
 
@@ -73,14 +66,7 @@ class ShopItemActivity : AppCompatActivity() {
             shopItemId = intent.getIntExtra(SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
         }
     }
-//
-//    private fun initViews() {
-//        tilName = findViewById(R.id.til_name)
-//        titCount = findViewById(R.id.tit_count)
-//        elName = findViewById(R.id.el_name)
-//        etCount = findViewById(R.id.et_count)
-//        saveButton = findViewById(R.id.save_button)
-//    }
+
 
     companion object {
         private const val EXTRA_SCREEN_MODE = "add_shop_item"
@@ -101,5 +87,10 @@ class ShopItemActivity : AppCompatActivity() {
             intent.putExtra(SHOP_ITEM_ID, shopItemId)
             return intent
         }
+    }
+
+    override fun onEditingFinishedListener() {
+        Toast.makeText(this, "OK", Toast.LENGTH_LONG).show()
+        finish()
     }
 }
