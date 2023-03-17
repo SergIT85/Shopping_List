@@ -8,23 +8,17 @@ import android.text.TextWatcher
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputLayout
 import ru.androideducation.shopping_list.R
 import ru.androideducation.shopping_list.domain.ShopItem
+import ru.androideducation.shopping_list.presentation.itemfragment.FragmentShopItem
 import java.lang.RuntimeException
 
-class ShopItemActivity : AppCompatActivity() {
-
-    private lateinit var viewModel: ShopItemViewModel
-
-    private lateinit var tilName: TextInputLayout
-    private lateinit var titCount: TextInputLayout
-    private lateinit var elName: EditText
-    private lateinit var etCount: EditText
-    private lateinit var saveButton: Button
+class ShopItemActivity : AppCompatActivity(), FragmentShopItem.OnEditingFinishedListener {
 
     private var screenMod = UNKNOWN_MOD
     private var shopItemId = ShopItem.UNDEFINED_ID
@@ -33,93 +27,27 @@ class ShopItemActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop_item)
         parseIntent()
-        viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
-        initViews()
-        addChangeSetListener()
-        launchScreenMod()
-        errorInputVisible()
-        closeScreen()
-    }
-
-    private fun closeScreen() {
-        viewModel.shouldCloseScreen.observe(this) {
-            finish()
+        if (savedInstanceState == null) {
+            launchScreenMod()
         }
-    }
-
-    private fun errorInputVisible() {
-        viewModel.errorInputName.observe(this, Observer {
-            val message = if (it) {
-                getString(R.string.error)
-            } else {
-                null
-            }
-            tilName.error = message
-        })
-
-        viewModel.errorInputCount.observe(this, Observer {
-            val message = if (it) {
-                getString(R.string.error)
-            } else {
-                null
-            }
-            titCount.error = message
-        })
     }
 
     private fun launchScreenMod() {
-        when (screenMod) {
-            OPEN_SCREEN_ADD_ITEM -> launchAddMod()
-            OPEN_SCREEN_EDIT_ITEM -> launchEditMod()
+        val fragment = when (screenMod) {
+            OPEN_SCREEN_ADD_ITEM -> {
+                Log.d("ShopItemActivity", "BBBBBBBBBBB$screenMod")
+                FragmentShopItem.newInstanceAddItem()
+            }
+            OPEN_SCREEN_EDIT_ITEM -> {
+                FragmentShopItem.newInstanceEditItem(shopItemId)
+            }
+            else -> throw RuntimeException("Unknown screen mod $screenMod")
+            //OPEN_SCREEN_EDIT_ITEM -> launchEditMod()
         }
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.shop_item_container, fragment)
+            .commit()
 
-    }
-
-    private fun addChangeSetListener() {
-        elName.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                viewModel.resetErrorInputName()
-            }
-
-            override fun afterTextChanged(p0: Editable?) {
-            }
-
-        })
-
-        etCount.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                viewModel.resetErrorInputCount()
-            }
-
-            override fun afterTextChanged(p0: Editable?) {
-            }
-
-        })
-    }
-
-    private fun launchAddMod() {
-        saveButton.setOnClickListener {
-            viewModel.addShopItem(elName.text.toString(), etCount.text.toString())
-            Log.d("ShopItemActivity", "$screenMod")
-        }
-    }
-
-    private fun launchEditMod() {
-        viewModel.getShopItem(shopItemId)
-        viewModel.shopItem.observe(this, Observer { it ->
-            elName.setText(it.name)
-            etCount.setText(it.id.toString())
-        })
-        saveButton.setOnClickListener {
-            viewModel.editShopItem(elName.text?.toString(), etCount.text?.toString())
-        }
-        Log.d("ShopItemActivity", "$screenMod id= $shopItemId")
     }
 
     private fun parseIntent() {
@@ -139,13 +67,6 @@ class ShopItemActivity : AppCompatActivity() {
         }
     }
 
-    private fun initViews() {
-        tilName = findViewById(R.id.til_name)
-        titCount = findViewById(R.id.tit_count)
-        elName = findViewById(R.id.el_name)
-        etCount = findViewById(R.id.et_count)
-        saveButton = findViewById(R.id.save_button)
-    }
 
     companion object {
         private const val EXTRA_SCREEN_MODE = "add_shop_item"
@@ -166,5 +87,10 @@ class ShopItemActivity : AppCompatActivity() {
             intent.putExtra(SHOP_ITEM_ID, shopItemId)
             return intent
         }
+    }
+
+    override fun onEditingFinishedListener() {
+        Toast.makeText(this, "OK", Toast.LENGTH_LONG).show()
+        finish()
     }
 }
