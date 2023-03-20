@@ -1,57 +1,42 @@
 package ru.androideducation.shopping_list.data
 
+import android.app.Application
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.map
 import ru.androideducation.shopping_list.domain.ShopItem
 import ru.androideducation.shopping_list.domain.ShopListRepository
-import java.lang.RuntimeException
-import kotlin.random.Random
 
-object ShopListRepositoryImpl: ShopListRepository {
 
-    private val shopListLD = MutableLiveData<List<ShopItem>>()
-    private val mutableShowList = sortedSetOf<ShopItem>({o1,o2 -> o1.id.compareTo(o2.id)})
+class ShopListRepositoryImpl(
+    application: Application
+) : ShopListRepository {
 
-    private var autoIncrementId = 0
+    private val shopListDao = AppDatabase.getInstanceDb(application).shopListDao()
 
-    init {
-        for(i in 0..10) {
-            val item = ShopItem("Item ${i+1}", i, Random.nextBoolean())
-            addShopItem(item)
-        }
+    private val mapper = ShopListMapper()
+
+    override suspend fun addShopItem(shopItem: ShopItem) {
+        shopListDao.addShopItem(mapper.mapShopItemToShopItemDbModel(shopItem))
     }
 
-    override fun addShopItem(shopItem: ShopItem) {
-        if(shopItem.id == ShopItem.UNDEFINED_ID) {
-            shopItem.id = autoIncrementId++
-        }
-        mutableShowList.add(shopItem)
-        updateShopListLD()
+    override suspend fun deleteShopItem(shopItem: ShopItem) {
+        shopListDao.deleteShopItem(shopItem.id)
     }
 
-    override fun deleteShopItem(shopItem: ShopItem) {
-        mutableShowList.remove(shopItem)
-        updateShopListLD()
+    override suspend fun changeShopItemById(shopItem: ShopItem) {
+        shopListDao.addShopItem(mapper.mapShopItemToShopItemDbModel(shopItem))
     }
 
-    override fun changeShopItemById(shopItem: ShopItem) {
-
-        val oldElementShopItem = getShopItemById(shopItem.id)
-        mutableShowList.remove(oldElementShopItem)
-        addShopItem(shopItem)
+    override suspend fun getShopItemById(shopItemId: Int): ShopItem {
+        val dbModel = shopListDao.getShopItem(shopItemId)
+        return mapper.mapShopItemDbModelToShopItem(dbModel)
     }
 
-    override fun getShopItemById(shopItemId: Int): ShopItem {
-        return mutableShowList.find {
-            it.id == shopItemId
-        } ?: throw RuntimeException("Element not found with id =$shopItemId ")
-    }
-
-    override fun getShopList(): LiveData<List<ShopItem>> {
-        return shopListLD
+    override fun getShopList(): LiveData<List<ShopItem>> = shopListDao.getShopList().map {
+        mapper.mapListDbModelToShopItem(it)
     }
 
     override fun updateShopListLD() {
-        shopListLD.value = mutableShowList.toList()
+        TODO("Not yet implemented")
     }
 }
