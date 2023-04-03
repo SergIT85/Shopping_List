@@ -3,27 +3,26 @@ package ru.androideducation.shopping_list.presentation
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
-import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.textfield.TextInputLayout
+import ru.androideducation.shopping_list.ApplicationMy
 import ru.androideducation.shopping_list.R
 import ru.androideducation.shopping_list.domain.ShopItem
 import ru.androideducation.shopping_list.presentation.itemfragment.FragmentShopItem
-import java.lang.RuntimeException
 
 class ShopItemActivity : AppCompatActivity(), FragmentShopItem.OnEditingFinishedListener {
 
     private var screenMod = UNKNOWN_MOD
     private var shopItemId = ShopItem.UNDEFINED_ID
 
+    private val component by lazy {
+        (application as ApplicationMy). component
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        component.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop_item)
         parseIntent()

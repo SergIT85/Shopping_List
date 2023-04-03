@@ -15,11 +15,14 @@ import android.widget.EditText
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputLayout
+import ru.androideducation.shopping_list.ApplicationMy
 import ru.androideducation.shopping_list.R
 import ru.androideducation.shopping_list.databinding.FragmentShopItemBinding
 import ru.androideducation.shopping_list.domain.ShopItem
 import ru.androideducation.shopping_list.presentation.ShopItemActivity
 import ru.androideducation.shopping_list.presentation.ShopItemViewModel
+import ru.androideducation.shopping_list.presentation.factory.ViewModelFactory
+import javax.inject.Inject
 import kotlin.RuntimeException
 
 class FragmentShopItem : Fragment() {
@@ -27,6 +30,13 @@ class FragmentShopItem : Fragment() {
     private lateinit var viewModel: ShopItemViewModel
 
     private lateinit var onEditingFinishedListener: OnEditingFinishedListener
+
+    private val component by lazy {
+        (requireActivity().application as ApplicationMy).component
+    }
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
 
     private var _binding: FragmentShopItemBinding? = null
     private val binding: FragmentShopItemBinding
@@ -36,6 +46,7 @@ class FragmentShopItem : Fragment() {
     private var shopItemId = ShopItem.UNDEFINED_ID
 
     override fun onAttach(context: Context) {
+        component.inject(this)
         super.onAttach(context)
         if (context is OnEditingFinishedListener) {
             onEditingFinishedListener = context
@@ -60,7 +71,7 @@ class FragmentShopItem : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
+        viewModel = ViewModelProvider(this, viewModelFactory)[ShopItemViewModel::class.java]
         addChangeSetListener()
         launchScreenMod()
         binding.viewModel = viewModel

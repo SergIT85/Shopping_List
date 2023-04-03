@@ -5,15 +5,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
 import ru.androideducation.shopping_list.domain.ShopItem
 import ru.androideducation.shopping_list.domain.ShopListRepository
+import javax.inject.Inject
 
 
-class ShopListRepositoryImpl(
-    application: Application
+class ShopListRepositoryImpl @Inject constructor(
+    private val application: Application,
+    private val shopListDao: ShopListDao,
+    private val mapper: ShopListMapper
 ) : ShopListRepository {
 
-    private val shopListDao = AppDatabase.getInstanceDb(application).shopListDao()
 
-    private val mapper = ShopListMapper()
 
     override suspend fun addShopItem(shopItem: ShopItem) {
         shopListDao.addShopItem(mapper.mapShopItemToShopItemDbModel(shopItem))

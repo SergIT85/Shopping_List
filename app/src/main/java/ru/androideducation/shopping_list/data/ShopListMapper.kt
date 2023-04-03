@@ -2,8 +2,9 @@ package ru.androideducation.shopping_list.data
 
 
 import ru.androideducation.shopping_list.domain.ShopItem
+import javax.inject.Inject
 
-class ShopListMapper {
+class ShopListMapper @Inject constructor() {
 
     fun mapShopItemToShopItemDbModel(shopItem: ShopItem) = ShopItemDbModel(
         id = shopItem.id,

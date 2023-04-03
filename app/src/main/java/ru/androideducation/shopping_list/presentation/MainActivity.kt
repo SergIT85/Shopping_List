@@ -7,9 +7,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import ru.androideducation.shopping_list.ApplicationMy
 import ru.androideducation.shopping_list.R
 import ru.androideducation.shopping_list.databinding.ActivityMainBinding
+import ru.androideducation.shopping_list.di.AppComponent
+import ru.androideducation.shopping_list.presentation.factory.ViewModelFactory
 import ru.androideducation.shopping_list.presentation.itemfragment.FragmentShopItem
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), FragmentShopItem.OnEditingFinishedListener {
 
@@ -17,12 +21,20 @@ class MainActivity : AppCompatActivity(), FragmentShopItem.OnEditingFinishedList
     private lateinit var viewModel: MainViewModel
     private lateinit var shopListadapter: ShopListAdapter
 
+    private val component by lazy {
+        (application as ApplicationMy).component
+    }
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        component.inject(this)
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
         setAdapter()
         viewModel.shopList.observe(this) {
             shopListadapter.submitList(it)
