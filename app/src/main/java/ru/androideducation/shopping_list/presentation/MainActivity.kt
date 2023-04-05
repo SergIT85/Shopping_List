@@ -1,5 +1,6 @@
 package ru.androideducation.shopping_list.presentation
 
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -47,6 +48,15 @@ class MainActivity : AppCompatActivity(), FragmentShopItem.OnEditingFinishedList
                 launchFragment(FragmentShopItem.newInstanceAddItem())
             }
         }
+
+        contentResolver.query(
+            Uri.parse("content://ru.androideducation.shopping_list/shop_items/"),
+            null,
+            null,
+            null,
+            null,
+            null,
+        )
     }
 
     private fun isOnePaneMod(): Boolean {
