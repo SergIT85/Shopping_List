@@ -4,7 +4,9 @@ import android.app.Activity
 import android.app.Application
 import dagger.BindsInstance
 import dagger.Component
+import dagger.Provides
 import ru.androideducation.shopping_list.ApplicationMy
+import ru.androideducation.shopping_list.data.ShopListProviders
 import ru.androideducation.shopping_list.presentation.MainActivity
 import ru.androideducation.shopping_list.presentation.ShopItemActivity
 import ru.androideducation.shopping_list.presentation.itemfragment.FragmentShopItem
@@ -22,6 +24,8 @@ interface AppComponent {
     fun inject(activity: ShopItemActivity)
     fun inject(fragment: FragmentShopItem)
     fun inject(application: ApplicationMy)
+
+    fun inject(provides: ShopListProviders)
 
     @Component.Factory
     interface Factory {

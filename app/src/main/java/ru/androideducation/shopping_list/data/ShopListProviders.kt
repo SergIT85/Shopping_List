@@ -6,8 +6,17 @@ import android.content.UriMatcher
 import android.database.Cursor
 import android.net.Uri
 import android.util.Log
+import ru.androideducation.shopping_list.ApplicationMy
+import javax.inject.Inject
 
 class ShopListProviders: ContentProvider() {
+
+    private val component by lazy {
+        (context as ApplicationMy).component
+    }
+
+    @Inject
+    lateinit var shopListDao: ShopListDao
 
     private val uriMatcher = UriMatcher(UriMatcher.NO_MATCH).apply {
         addURI("ru.androideducation.shopping_list", "shop_items", CODE_SHOP_ITEMS)
@@ -15,6 +24,7 @@ class ShopListProviders: ContentProvider() {
     }
 
     override fun onCreate(): Boolean {
+        component.inject(this)
         return true
     }
 
@@ -25,18 +35,20 @@ class ShopListProviders: ContentProvider() {
         p3: Array<out String>?,
         p4: String?
     ): Cursor? {
-        val code = uriMatcher.match(p0)
-
-        when(code) {
+        return when(uriMatcher.match(p0)) {
             CODE_SHOP_ITEMS -> {
-                Log.d("ShopListProviders", "ShopListProviders query $p0 code - $code" )
+                shopListDao.getShopListCursor()
             }
             CODE_SHOP_ITEMS_STRING -> {
-                Log.d("ShopListProviders", "ShopListProviders query $p0 code - $code" )
+
+                null
+            }
+            else -> {
+                null
             }
         }
 
-        return null
+
     }
 
     override fun getType(p0: Uri): String? {
