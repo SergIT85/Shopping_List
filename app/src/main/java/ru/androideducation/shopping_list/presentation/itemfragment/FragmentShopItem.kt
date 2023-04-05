@@ -1,7 +1,9 @@
 package ru.androideducation.shopping_list.presentation.itemfragment
 
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -24,6 +26,7 @@ import ru.androideducation.shopping_list.presentation.ShopItemViewModel
 import ru.androideducation.shopping_list.presentation.factory.ViewModelFactory
 import javax.inject.Inject
 import kotlin.RuntimeException
+import kotlin.concurrent.thread
 
 class FragmentShopItem : Fragment() {
 
@@ -126,8 +129,23 @@ class FragmentShopItem : Fragment() {
 
     private fun launchAddMod() {
         binding.saveButton.setOnClickListener {
-            viewModel.addShopItem(binding.elName.text.toString(), binding.etCount.text.toString())
-            Log.d("ShopItemActivity", "$screenMod")
+//            viewModel.addShopItem(
+//                binding.elName.text.toString(),
+//                binding.etCount.text.toString()
+//            )
+//            Log.d("ShopItemActivity", "$screenMod")
+
+            thread {
+                context?.contentResolver?.insert(
+                    Uri.parse("content://ru.androideducation.shopping_list/shop_items/"),
+                ContentValues().apply {
+                    put("id", 0)
+                    put("name", binding.elName.text.toString())
+                    put("count", binding.etCount.text.toString().toInt())
+                    put("enabled", true)
+                }
+                )
+            }
         }
     }
 
