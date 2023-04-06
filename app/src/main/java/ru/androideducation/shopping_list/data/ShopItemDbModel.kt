@@ -9,6 +9,6 @@ data class ShopItemDbModel(
     var id: Int,
     val name: String,
     val count: Int,
-    val enadled: Boolean,
+    val enabled: Boolean,
 
 )
