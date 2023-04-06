@@ -126,7 +126,15 @@ class MainActivity : AppCompatActivity(), FragmentShopItem.OnEditingFinishedList
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val item = shopListadapter.currentList[viewHolder.adapterPosition]
-                viewModel.deleteShopItem(item)
+//                viewModel.deleteShopItem(item)
+                thread {
+                    contentResolver.delete(
+                        Uri.parse("content://ru.androideducation.shopping_list/shop_items/"),
+                        null,
+                        arrayOf(item.id.toString())
+                    )
+                }
+
             }
 
         }
